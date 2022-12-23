@@ -1,0 +1,2 @@
+# coretipjar
+core tipjar details
