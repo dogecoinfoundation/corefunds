@@ -44,7 +44,7 @@ The following consumes input #1 (the second) of transaction
 The remaining 0.1 Doge is burnt as a (high) transaction fee.
 
 ```shell
-dogecoin-cli "[{\"txid\":\"169a73cf972fbc1ff9d480474e5de7db03d63c243f4b57d25cdd09ba56ff2738\",\"vout\":1}]" "[{\"9xEP9voiNLw7Y7DS87M8QRqKM43r6r5KM5\":9.9}]"
+dogecoin-cli createpsbt "[{\"txid\":\"169a73cf972fbc1ff9d480474e5de7db03d63c243f4b57d25cdd09ba56ff2738\",\"vout\":1}]" "[{\"9xEP9voiNLw7Y7DS87M8QRqKM43r6r5KM5\":9.9}]"
 ```
 
 This creates the following PSBT, which you'll see as inputs to later examples:
@@ -143,14 +143,16 @@ signatures to meet the threshold are relayed, so the other signatures
 should be kept for audit purposes elsewhere.
 
 Depending how the signing has happened, if each person has passed the
-PSBT along to the next in turn, you should be able to call `finalizepsbt`
+PSBT along to the next in turn, you should be able to call
+[finalizepsbt](https://bitcoincore.org/en/doc/0.17.0/rpc/rawtransactions/finalizepsbt/)
 directly. Alternatively, if they were signed independently then the
-signatures need assembling, `combinepsbt` can put the PSBTs together
-and return the assembled set ready to pass to `finalizepsbt`.
+signatures need assembling, [combinepsbt](https://bitcoincore.org/en/doc/0.17.0/rpc/rawtransactions/combinepsbt/)
+can put the PSBTs together and return the assembled set ready to pass in to
+finalizepsbt.
 
-`finalizepsbt` returns a fully signed transaction, but does not relay it.
-Before relaying, it's a good idea to `decoderawtransaction` the transaction
-to verify it is correct.
+finalizepsbt returns a fully signed transaction, but does not relay it.
+Before relaying, it's a good idea to [decoderawtransaction](https://bitcoincore.org/en/doc/0.17.0/rpc/rawtransactions/decoderawtransaction/)
+the transaction to verify it is correct.
 
 ## Relaying the Transaction
 
