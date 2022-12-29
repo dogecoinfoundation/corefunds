@@ -38,10 +38,13 @@ Creating the transaction involves defining its inputs, and the amounts to send.
 This generates a very bare PSBT which isn't very useful until it's processed
 by a node with a wallet.
 
-The following consumes input #1 (the second) of transaction
+The following uses the [createpsbt](https://bitcoincore.org/en/doc/0.17.0/rpc/rawtransactions/createpsbt/)
+command to generate a new transaction which consumes input #1 (the second) of
+transaction
 `169a73cf972fbc1ff9d480474e5de7db03d63c243f4b57d25cdd09ba56ff2738`, which was
-10 Dogecoins, and sends 9.9 Doge back to `9xEP9voiNLw7Y7DS87M8QRqKM43r6r5KM5`.
-The remaining 0.1 Doge is burnt as a (high) transaction fee.
+10 Dogecoins, and sends 9.9 Dogecoins back to
+`9xEP9voiNLw7Y7DS87M8QRqKM43r6r5KM5`. The remaining 0.1 Dogecoins are burnt
+as a (somewhat high) transaction fee.
 
 ```shell
 dogecoin-cli createpsbt "[{\"txid\":\"169a73cf972fbc1ff9d480474e5de7db03d63c243f4b57d25cdd09ba56ff2738\",\"vout\":1}]" "[{\"9xEP9voiNLw7Y7DS87M8QRqKM43r6r5KM5\":9.9}]"
@@ -53,7 +56,8 @@ This creates the following PSBT, which you'll see as inputs to later examples:
 cHNidP8BAFMCAAAAATgn/1a6Cd1c0ldLPyQ81gPb511OR4DU+R+8L5fPc5oWAQAAAAD/////AYAzAjsAAAAAF6kUP5EutQN3mspXxZVmYkhcTKkTMK2HAAAAAAAAAA==
 ```
 
-I can decode the resulting PSBT to check its contents:
+You can decode the resulting PSBT to check its contents, we'll discuss
+this in detail later.
 
 ```shell
 $ dogecoin-cli decodepsbt cHNidP8BAFMCAAAAATgn/1a6Cd1c0ldLPyQ81gPb511OR4DU+R+8L5fPc5oWAQAAAAD/////AYAzAjsAAAAAF6kUP5EutQN3mspXxZVmYkhcTKkTMK2HAAAAAAAAAA==
@@ -61,14 +65,15 @@ $ dogecoin-cli decodepsbt cHNidP8BAFMCAAAAATgn/1a6Cd1c0ldLPyQ81gPb511OR4DU+R+8L5
 
 ## Wallet Processing the Transaction
 
-The next step is to add the required details to the PSBT can be signed.
+The next step is to add the required details to the PSBT can be signed. For
+this we'll use [walletprocesspsbt](https://bitcoincore.org/en/doc/0.17.0/rpc/wallet/walletprocesspsbt/), as below:
 
 ```
-$ dogecoin-cli  -datadir=/data/dogecoin walletprocesspsbt cHNidP8BAFMCAAAAATgn/1a6Cd1c0ldLPyQ81gPb511OR4DU+R+8L5fPc5oWAQAAAAD/////AYAzAjsAAAAAF6kUP5EutQN3mspXxZVmYkhcTKkTMK2HAAAAAAAAAA==
+$ dogecoin-cli walletprocesspsbt cHNidP8BAFMCAAAAATgn/1a6Cd1c0ldLPyQ81gPb511OR4DU+R+8L5fPc5oWAQAAAAD/////AYAzAjsAAAAAF6kUP5EutQN3mspXxZVmYkhcTKkTMK2HAAAAAAAAAA==
 ```
 
-If this has worked correctly, decoding the resulting PSBT should show it
-includes the transaction inputs (i.e. pipe it to `| jq .inputs`).
+If the wallet has the address watched correctly, decoding the resulting PSBT
+will show it includes the transaction inputs (i.e. pipe it to `| jq .inputs`).
 
 If this is done on a wallet with an available signing key, by default
 it will add a signature to the PSBT too. The process I follow involves
@@ -137,7 +142,7 @@ output value, and in this case is 0.1 Dogecoins.
 ## Finalizing the Transaction
 
 Once you have enough signatures, you can assemble the transaction. Note
-"can" doesn not mean "should" - getting a signature from every signer
+"can" does not mean "should" - getting a signature from every signer
 is definitely preferable. That said, conventionally only sufficient
 signatures to meet the threshold are relayed, so the other signatures
 should be kept for audit purposes elsewhere.
